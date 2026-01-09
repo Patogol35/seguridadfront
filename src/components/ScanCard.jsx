@@ -37,12 +37,18 @@ export default function ScanCard({
     <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
       <Card sx={{ borderRadius: 4, boxShadow: 6 }}>
         <CardContent>
+
           {/* HEADER */}
           <Box display="flex" alignItems="center" mb={2}>
             <SecurityIcon color="primary" sx={{ mr: 1 }} />
-            <Typography variant="h5" fontWeight="bold">
-              Web Security Analyzer
-            </Typography>
+            <Box>
+              <Typography variant="h5" fontWeight="bold">
+                Web Security Analyzer
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Autor: Jorge Patricio Santamaría Cherrez
+              </Typography>
+            </Box>
           </Box>
 
           {/* INPUT */}
