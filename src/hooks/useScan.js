@@ -8,6 +8,8 @@ export const useScan = () => {
   const [error, setError] = useState(null);
 
   const scan = async () => {
+    if (!url) return;
+
     setLoading(true);
     setError(null);
     setResult(null);
@@ -24,5 +26,12 @@ export const useScan = () => {
     }
   };
 
-  return { url, setUrl, loading, result, error, scan };
+  return {
+    url,
+    setUrl,
+    loading,
+    result,
+    error,
+    scan,
+  };
 };
