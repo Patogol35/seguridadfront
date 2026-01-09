@@ -10,6 +10,14 @@ export const useScan = () => {
   const scan = async () => {
     if (!url) return;
 
+    // ✅ VALIDACIÓN DE URL (evita pantalla negra)
+    try {
+      new URL(url);
+    } catch {
+      setError("Por favor ingresa una URL válida (ej: https://example.com)");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setResult(null);
