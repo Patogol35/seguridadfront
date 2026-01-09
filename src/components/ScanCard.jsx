@@ -33,6 +33,7 @@ export default function ScanCard({
     <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
       <Card sx={{ borderRadius: 4, boxShadow: 6 }}>
         <CardContent>
+          {/* HEADER */}
           <Box display="flex" alignItems="center" mb={2}>
             <SecurityIcon color="primary" sx={{ mr: 1 }} />
             <Typography variant="h5" fontWeight="bold">
@@ -40,6 +41,7 @@ export default function ScanCard({
             </Typography>
           </Box>
 
+          {/* INPUT */}
           <TextField
             fullWidth
             label="URL del sitio"
@@ -47,6 +49,7 @@ export default function ScanCard({
             onChange={(e) => setUrl(e.target.value)}
           />
 
+          {/* BUTTON */}
           <Button
             fullWidth
             variant="contained"
@@ -57,12 +60,19 @@ export default function ScanCard({
             {loading ? <CircularProgress size={24} /> : "Escanear"}
           </Button>
 
-          {error && <Typography color="error">{error}</Typography>}
+          {/* ERROR */}
+          {error && (
+            <Typography color="error" mt={2}>
+              {error}
+            </Typography>
+          )}
 
+          {/* RESULT */}
           {result && (
             <>
               <Divider sx={{ my: 3 }} />
 
+              {/* RISK */}
               <Chip
                 label={`Riesgo: ${result.risk.level} (${result.risk.score})`}
                 color={riskColor(result.risk.level)}
@@ -75,24 +85,45 @@ export default function ScanCard({
                 }
               />
 
+              {/* TESTS */}
               <Stack spacing={1} mt={2}>
                 <Typography>
-                  XSS:{" "}
+                  XSS (heurístico):{" "}
                   <strong>
                     {result.tests.xss ? "Vulnerable" : "Seguro"}
                   </strong>
                 </Typography>
                 <Typography>
-                  SQLi:{" "}
+                  SQLi (heurístico):{" "}
                   <strong>
                     {result.tests.sqli ? "Vulnerable" : "Seguro"}
                   </strong>
                 </Typography>
               </Stack>
 
+              {/* ISSUES */}
               <Divider sx={{ my: 2 }} />
+              <Typography variant="h6">Issues detectadas</Typography>
 
+              <Stack spacing={1} mt={1}>
+                {result.issues.length === 0 ? (
+                  <Typography>✔ No se detectaron problemas</Typography>
+                ) : (
+                  result.issues.map((issue, i) => (
+                    <Chip
+                      key={i}
+                      label={issue}
+                      color="warning"
+                      variant="outlined"
+                    />
+                  ))
+                )}
+              </Stack>
+
+              {/* RECOMMENDATIONS */}
+              <Divider sx={{ my: 2 }} />
               <Typography variant="h6">Recomendaciones</Typography>
+
               <Stack spacing={1} mt={1}>
                 {result.recommendations.length === 0 ? (
                   <Typography>✔ Sin acciones urgentes</Typography>
