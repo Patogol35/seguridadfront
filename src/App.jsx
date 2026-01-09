@@ -6,14 +6,7 @@ function App() {
   const scanState = useScan();
 
   return (
-    <Container
-      maxWidth="lg"
-      sx={{
-        mt: 4,
-        display: "flex",
-        justifyContent: "center",
-      }}
-    >
+    <Container maxWidth="sm" sx={{ mt: 6 }}>
       <ScanCard {...scanState} />
     </Container>
   );
