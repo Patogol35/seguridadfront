@@ -15,16 +15,11 @@ export const useScan = () => {
     setResult(null);
 
     try {
-      const formattedUrl = url.startsWith("http")
-        ? url
-        : `https://${url}`;
-
-      const data = await scanWebsite(formattedUrl);
+      const data = await scanWebsite(url);
       setResult(data);
     } catch (err) {
       setError(
-        err?.response?.data?.detail ||
-          "No se pudo analizar el sitio. Verifica la URL."
+        err.response?.data?.detail || "Error al escanear el sitio"
       );
     } finally {
       setLoading(false);
