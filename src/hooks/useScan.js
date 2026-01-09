@@ -7,19 +7,19 @@ export const useScan = () => {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
-  const scan = async (finalUrl) => {
-    if (!finalUrl) return;
+  const scan = async () => {
+    if (!url) return;
 
     setLoading(true);
     setError(null);
+    setResult(null);
 
     try {
-      const data = await scanWebsite(finalUrl);
+      const data = await scanWebsite(url);
       setResult(data);
     } catch (err) {
       setError(
-        err?.response?.data?.detail ||
-          "Error al escanear el sitio"
+        err.response?.data?.detail || "Error al escanear el sitio"
       );
     } finally {
       setLoading(false);
