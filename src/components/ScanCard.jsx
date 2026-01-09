@@ -15,25 +15,6 @@ import WarningIcon from "@mui/icons-material/Warning";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { motion } from "framer-motion";
 
-/* ======================
-UTILS
-====================== */
-const isValidUrl = (value) => {
-  if (!value) return false;
-  try {
-    new URL(value.startsWith("http") ? value : `https://${value}`);
-    return value.length > 5;
-  } catch {
-    return false;
-  }
-};
-
-const riskColor = (level) => {
-  if (level === "ALTO") return "error";
-  if (level === "MEDIO") return "warning";
-  return "success";
-};
-
 export default function ScanCard({
   url,
   setUrl,
@@ -42,15 +23,15 @@ export default function ScanCard({
   result,
   error,
 }) {
+  const riskColor = (level) => {
+    if (level === "ALTO") return "error";
+    if (level === "MEDIO") return "warning";
+    return "success";
+  };
+
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-      <Card
-        sx={{
-          width: "100%",
-          borderRadius: 4,
-          boxShadow: 6,
-        }}
-      >
+    <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
+      <Card sx={{ borderRadius: 4, boxShadow: 6 }}>
         <CardContent>
           {/* HEADER */}
           <Box display="flex" alignItems="center" mb={2}>
@@ -65,13 +46,7 @@ export default function ScanCard({
             fullWidth
             label="URL del sitio"
             value={url}
-            onChange={(e) => setUrl(e.target.value.trim())}
-            error={url.length > 0 && !isValidUrl(url)}
-            helperText={
-              url.length > 0 && !isValidUrl(url)
-                ? "Ingresa una URL válida (ej: https://example.com)"
-                : ""
-            }
+            onChange={(e) => setUrl(e.target.value)}
           />
 
           {/* BUTTON */}
@@ -80,7 +55,7 @@ export default function ScanCard({
             variant="contained"
             sx={{ mt: 3 }}
             onClick={scan}
-            disabled={loading || !isValidUrl(url)}
+            disabled={loading || !url}
           >
             {loading ? <CircularProgress size={24} /> : "Escanear"}
           </Button>
