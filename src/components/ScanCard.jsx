@@ -1,4 +1,4 @@
-import {
+              import {
   Card,
   CardContent,
   Typography,
@@ -15,26 +15,6 @@ import WarningIcon from "@mui/icons-material/Warning";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { motion } from "framer-motion";
 
-/* ======================
-UTILS
-====================== */
-const normalizeUrl = (value) => {
-  if (!value) return "";
-  if (!value.startsWith("http://") && !value.startsWith("https://")) {
-    return "https://" + value;
-  }
-  return value;
-};
-
-const isValidUrl = (value) => {
-  try {
-    new URL(normalizeUrl(value));
-    return true;
-  } catch {
-    return false;
-  }
-};
-
 export default function ScanCard({
   url,
   setUrl,
@@ -49,26 +29,14 @@ export default function ScanCard({
     return "success";
   };
 
-  const canScan = isValidUrl(url);
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      style={{ width: "100%" }}
-    >
-      <Card
-        sx={{
-          width: "100%",
-          borderRadius: 4,
-          boxShadow: 8,
-        }}
-      >
-        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+    <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
+      <Card sx={{ borderRadius: 4, boxShadow: 6 }}>
+        <CardContent>
           {/* HEADER */}
           <Box display="flex" alignItems="center" mb={2}>
             <SecurityIcon color="primary" sx={{ mr: 1 }} />
-            <Typography variant="h6" fontWeight="bold">
+            <Typography variant="h5" fontWeight="bold">
               Web Security Analyzer
             </Typography>
           </Box>
@@ -77,33 +45,19 @@ export default function ScanCard({
           <TextField
             fullWidth
             label="URL del sitio"
-            placeholder="google.com o https://google.com"
             value={url}
-            onChange={(e) => setUrl(e.target.value.trim())}
-            error={url.length > 0 && !canScan}
-            helperText={
-              url.length > 0 && !canScan
-                ? "URL no válida"
-                : " "
-            }
+            onChange={(e) => setUrl(e.target.value)}
           />
 
           {/* BUTTON */}
           <Button
             fullWidth
             variant="contained"
-            sx={{ mt: 2, height: 48 }}
-            onClick={() => scan(normalizeUrl(url))}
-            disabled={loading || !canScan}
+            sx={{ mt: 3 }}
+            onClick={scan}
+            disabled={loading || !url}
           >
-            {loading ? (
-              <>
-                <CircularProgress size={20} sx={{ mr: 1 }} />
-                Analizando…
-              </>
-            ) : (
-              "Escanear"
-            )}
+            {loading ? <CircularProgress size={24} /> : "Escanear"}
           </Button>
 
           {/* ERROR */}
@@ -118,6 +72,7 @@ export default function ScanCard({
             <>
               <Divider sx={{ my: 3 }} />
 
+              {/* RISK */}
               <Chip
                 label={`Riesgo: ${result.risk.level} (${result.risk.score})`}
                 color={riskColor(result.risk.level)}
@@ -130,6 +85,7 @@ export default function ScanCard({
                 }
               />
 
+              {/* TESTS */}
               <Stack spacing={1} mt={2}>
                 <Typography>
                   XSS (heurístico):{" "}
@@ -145,10 +101,9 @@ export default function ScanCard({
                 </Typography>
               </Stack>
 
+              {/* ISSUES */}
               <Divider sx={{ my: 2 }} />
-              <Typography variant="subtitle1" fontWeight="bold">
-                Issues detectadas
-              </Typography>
+              <Typography variant="h6">Issues detectadas</Typography>
 
               <Stack spacing={1} mt={1}>
                 {result.issues.length === 0 ? (
@@ -165,10 +120,9 @@ export default function ScanCard({
                 )}
               </Stack>
 
+              {/* RECOMMENDATIONS */}
               <Divider sx={{ my: 2 }} />
-              <Typography variant="subtitle1" fontWeight="bold">
-                Recomendaciones
-              </Typography>
+              <Typography variant="h6">Recomendaciones</Typography>
 
               <Stack spacing={1} mt={1}>
                 {result.recommendations.length === 0 ? (
@@ -185,4 +139,4 @@ export default function ScanCard({
       </Card>
     </motion.div>
   );
-}
+                 }
