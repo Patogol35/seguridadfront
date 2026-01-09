@@ -1,4 +1,4 @@
-import {
+                import {
   Card,
   CardContent,
   Typography,
@@ -23,12 +23,6 @@ export default function ScanCard({
   result,
   error,
 }) {
-  const riskColor = (level) => {
-    if (level === "ALTO") return "error";
-    if (level === "MEDIO") return "warning";
-    return "success";
-  };
-
   return (
     <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
       <Card sx={{ borderRadius: 4, boxShadow: 6 }}>
@@ -43,6 +37,7 @@ export default function ScanCard({
           <TextField
             fullWidth
             label="URL del sitio"
+            placeholder="https://example.com"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
           />
@@ -52,7 +47,7 @@ export default function ScanCard({
             variant="contained"
             sx={{ mt: 3 }}
             onClick={scan}
-            disabled={!url || loading}
+            disabled={loading || !url}
           >
             {loading ? <CircularProgress size={24} /> : "Escanear"}
           </Button>
@@ -68,10 +63,10 @@ export default function ScanCard({
               <Divider sx={{ my: 3 }} />
 
               <Chip
-                label={`Riesgo: ${result.risk.level}`}
-                color={riskColor(result.risk.level)}
+                label={`Issues encontradas: ${result.issues_found}`}
+                color={result.issues_found > 0 ? "warning" : "success"}
                 icon={
-                  result.risk.level === "ALTO" ? (
+                  result.issues_found > 0 ? (
                     <WarningIcon />
                   ) : (
                     <CheckCircleIcon />
@@ -80,24 +75,13 @@ export default function ScanCard({
               />
 
               <Stack spacing={1} mt={2}>
-                <Typography>
-                  XSS:{" "}
-                  <strong>
-                    {result.results.xss.vulnerable ? "Vulnerable" : "Seguro"}
-                  </strong>
-                </Typography>
-                <Typography>
-                  SQLi:{" "}
-                  <strong>
-                    {result.results.sqli.vulnerable ? "Vulnerable" : "Seguro"}
-                  </strong>
-                </Typography>
-                <Typography>
-                  Headers faltantes:{" "}
-                  <strong>
-                    {result.results.headers.missing_headers.length}
-                  </strong>
-                </Typography>
+                {result.issues.length === 0 ? (
+                  <Typography>✔ No se detectaron problemas</Typography>
+                ) : (
+                  result.issues.map((issue, index) => (
+                    <Typography key={index}>• {issue}</Typography>
+                  ))
+                )}
               </Stack>
             </>
           )}
@@ -105,4 +89,4 @@ export default function ScanCard({
       </Card>
     </motion.div>
   );
-                            }
+}
