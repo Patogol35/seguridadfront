@@ -7,10 +7,9 @@ function App() {
 
   return (
     <Container
-      maxWidth="md"
+      maxWidth="lg"
       sx={{
-        minHeight: "100vh",
-        py: { xs: 2, sm: 4 },
+        mt: 4,
         display: "flex",
         justifyContent: "center",
       }}
