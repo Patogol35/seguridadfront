@@ -15,9 +15,20 @@ import WarningIcon from "@mui/icons-material/Warning";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { motion } from "framer-motion";
 
+/* ======================
+UTILS
+====================== */
+const normalizeUrl = (value) => {
+  if (!value) return "";
+  if (!value.startsWith("http://") && !value.startsWith("https://")) {
+    return "https://" + value;
+  }
+  return value;
+};
+
 const isValidUrl = (value) => {
   try {
-    new URL(value);
+    new URL(normalizeUrl(value));
     return true;
   } catch {
     return false;
@@ -48,9 +59,9 @@ export default function ScanCard({
     >
       <Card
         sx={{
+          width: "100%",
           borderRadius: 4,
           boxShadow: 8,
-          width: "100%",
         }}
       >
         <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
@@ -66,13 +77,13 @@ export default function ScanCard({
           <TextField
             fullWidth
             label="URL del sitio"
-            placeholder="https://ejemplo.com"
+            placeholder="google.com o https://google.com"
             value={url}
             onChange={(e) => setUrl(e.target.value.trim())}
             error={url.length > 0 && !canScan}
             helperText={
               url.length > 0 && !canScan
-                ? "Ingresa una URL válida"
+                ? "URL no válida"
                 : " "
             }
           />
@@ -82,10 +93,17 @@ export default function ScanCard({
             fullWidth
             variant="contained"
             sx={{ mt: 2, height: 48 }}
-            onClick={scan}
+            onClick={() => scan(normalizeUrl(url))}
             disabled={loading || !canScan}
           >
-            {loading ? <CircularProgress size={24} /> : "Escanear"}
+            {loading ? (
+              <>
+                <CircularProgress size={20} sx={{ mr: 1 }} />
+                Analizando…
+              </>
+            ) : (
+              "Escanear"
+            )}
           </Button>
 
           {/* ERROR */}
@@ -114,13 +132,13 @@ export default function ScanCard({
 
               <Stack spacing={1} mt={2}>
                 <Typography>
-                  XSS:{" "}
+                  XSS (heurístico):{" "}
                   <strong>
                     {result.tests.xss ? "Vulnerable" : "Seguro"}
                   </strong>
                 </Typography>
                 <Typography>
-                  SQLi:{" "}
+                  SQLi (heurístico):{" "}
                   <strong>
                     {result.tests.sqli ? "Vulnerable" : "Seguro"}
                   </strong>
