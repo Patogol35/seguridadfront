@@ -1,22 +1,31 @@
-import { Container } from "@mui/material";
+import { Container, Box, useMediaQuery } from "@mui/material";
 import ScanCard from "./components/ScanCard";
 import { useScan } from "./hooks/useScan";
 
 function App() {
   const scanState = useScan();
+  const isLandscape = useMediaQuery("(orientation: landscape)");
 
   return (
     <Container
       maxWidth={false}
+      disableGutters
       sx={{
         minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        px: { xs: 1, sm: 2, md: 4 },
+        px: { xs: 1, sm: 2 },
       }}
     >
-      <ScanCard {...scanState} />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: isLandscape ? "flex-start" : "center",
+          minHeight: "100vh",
+          pt: isLandscape ? 1 : 0,
+        }}
+      >
+        <ScanCard {...scanState} isLandscape={isLandscape} />
+      </Box>
     </Container>
   );
 }
