@@ -41,29 +41,30 @@ export default function ScanCard({
   loading,
   result,
   error,
+  isLandscape,
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 25 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <Card
         sx={{
           width: "100%",
-          maxWidth: 520,
-          borderRadius: 4,
-          boxShadow: 8,
+          maxWidth: isLandscape ? 900 : 520,
+          borderRadius: 3,
+          boxShadow: 6,
+          mt: isLandscape ? 1 : 0,
         }}
       >
-        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+        <CardContent
+          sx={{
+            p: isLandscape ? 1.5 : 3,
+            maxHeight: isLandscape ? "85vh" : "none",
+            overflowY: isLandscape ? "auto" : "visible",
+          }}
+        >
           {/* HEADER */}
-          <Box display="flex" alignItems="center" mb={2}>
+          <Box display="flex" alignItems="center" mb={1}>
             <SecurityIcon color="primary" sx={{ mr: 1 }} />
-            <Typography
-              fontWeight="bold"
-              sx={{ fontSize: { xs: "1.2rem", sm: "1.4rem" } }}
-            >
+            <Typography fontWeight="bold" fontSize="1.2rem">
               Web Security Analyzer
             </Typography>
           </Box>
@@ -71,13 +72,14 @@ export default function ScanCard({
           {/* INPUT */}
           <TextField
             fullWidth
+            size="small"
             label="URL del sitio"
             value={url}
             onChange={(e) => setUrl(e.target.value.trim())}
             error={url.length > 0 && !isValidUrl(url)}
             helperText={
               url.length > 0 && !isValidUrl(url)
-                ? "Ingresa una URL válida (ej: https://example.com)"
+                ? "URL inválida (ej: example.com)"
                 : ""
             }
           />
@@ -85,43 +87,33 @@ export default function ScanCard({
           {/* BUTTON */}
           <Button
             fullWidth
+            size="small"
             variant="contained"
-            sx={{ mt: 2 }}
+            sx={{ mt: 1.5 }}
             onClick={scan}
             disabled={loading || !isValidUrl(url)}
           >
-            {loading ? <CircularProgress size={24} /> : "Escanear"}
+            {loading ? <CircularProgress size={20} /> : "Escanear"}
           </Button>
 
           {/* ERROR */}
-          <AnimatePresence>
-            {error && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <Typography color="error" mt={2}>
-                  {error}
-                </Typography>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {error && (
+            <Typography color="error" mt={1} variant="body2">
+              {error}
+            </Typography>
+          )}
 
           {/* RESULT */}
           <AnimatePresence>
             {result && (
               <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
               >
-                <Divider sx={{ my: 3 }} />
+                <Divider sx={{ my: 1.5 }} />
 
-                {/* RISK */}
                 <Chip
                   size="small"
-                  sx={{ mb: 1 }}
                   label={`Riesgo: ${result.risk.level} (${result.risk.score})`}
                   color={riskColor(result.risk.level)}
                   icon={
@@ -133,32 +125,31 @@ export default function ScanCard({
                   }
                 />
 
-                {/* TESTS */}
-                <Stack spacing={0.5} mt={1}>
+                <Stack spacing={0.3} mt={1}>
                   <Typography variant="body2">
-                    XSS (heurístico):{" "}
+                    XSS:{" "}
                     <strong>
                       {result.tests.xss ? "Vulnerable" : "Seguro"}
                     </strong>
                   </Typography>
                   <Typography variant="body2">
-                    SQLi (heurístico):{" "}
+                    SQLi:{" "}
                     <strong>
                       {result.tests.sqli ? "Vulnerable" : "Seguro"}
                     </strong>
                   </Typography>
                 </Stack>
 
-                {/* ISSUES */}
-                <Divider sx={{ my: 2 }} />
-                <Typography variant="subtitle1" fontWeight="bold">
-                  Issues detectadas
+                <Divider sx={{ my: 1 }} />
+
+                <Typography fontWeight="bold" variant="body2">
+                  Issues
                 </Typography>
 
-                <Stack spacing={1} mt={1}>
+                <Stack spacing={0.5} mt={0.5}>
                   {result.issues.length === 0 ? (
                     <Typography variant="body2">
-                      ✔ No se detectaron problemas
+                      ✔ Sin problemas
                     </Typography>
                   ) : (
                     result.issues.map((issue, i) => (
@@ -166,31 +157,25 @@ export default function ScanCard({
                         key={i}
                         label={issue}
                         size="small"
-                        color="warning"
                         variant="outlined"
+                        color="warning"
                       />
                     ))
                   )}
                 </Stack>
 
-                {/* RECOMMENDATIONS */}
-                <Divider sx={{ my: 2 }} />
-                <Typography variant="subtitle1" fontWeight="bold">
+                <Divider sx={{ my: 1 }} />
+
+                <Typography fontWeight="bold" variant="body2">
                   Recomendaciones
                 </Typography>
 
-                <Stack spacing={0.5} mt={1}>
-                  {result.recommendations.length === 0 ? (
-                    <Typography variant="body2">
-                      ✔ Sin acciones urgentes
+                <Stack spacing={0.3} mt={0.5}>
+                  {result.recommendations.map((rec, i) => (
+                    <Typography key={i} variant="body2">
+                      • {rec}
                     </Typography>
-                  ) : (
-                    result.recommendations.map((rec, i) => (
-                      <Typography key={i} variant="body2">
-                        • {rec}
-                      </Typography>
-                    ))
-                  )}
+                  ))}
                 </Stack>
               </motion.div>
             )}
@@ -199,4 +184,4 @@ export default function ScanCard({
       </Card>
     </motion.div>
   );
-          }
+}
