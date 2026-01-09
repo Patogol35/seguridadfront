@@ -9,12 +9,10 @@ import {
   Stack,
   Divider,
   Box,
-  Grid,
 } from "@mui/material";
 import SecurityIcon from "@mui/icons-material/Security";
 import WarningIcon from "@mui/icons-material/Warning";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import BugReportIcon from "@mui/icons-material/BugReport";
 import { motion } from "framer-motion";
 
 export default function ScanCard({
@@ -32,155 +30,113 @@ export default function ScanCard({
   };
 
   return (
-    <Box px={{ xs: 1, sm: 2 }} py={2}>
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <Card
-          sx={{
-            borderRadius: 3,
-            boxShadow: 6,
-            maxWidth: "100%",
-          }}
-        >
-          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-            {/* HEADER */}
-            <Box
-              display="flex"
-              alignItems="center"
-              gap={1}
-              mb={2}
-            >
-              <SecurityIcon color="primary" />
-              <Typography variant="h6" fontWeight="bold">
-                Web Security Analyzer
-              </Typography>
-            </Box>
+    <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
+      <Card sx={{ borderRadius: 4, boxShadow: 6 }}>
+        <CardContent>
+          {/* HEADER */}
+          <Box display="flex" alignItems="center" mb={2}>
+            <SecurityIcon color="primary" sx={{ mr: 1 }} />
+            <Typography variant="h5" fontWeight="bold">
+              Web Security Analyzer
+            </Typography>
+          </Box>
 
-            {/* INPUT + BUTTON */}
-            <Grid container spacing={1.5}>
-              <Grid item xs={12} md={8}>
-                <TextField
-                  fullWidth
-                  size="small"
-                  label="URL del sitio"
-                  placeholder="https://example.com"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                />
-              </Grid>
+          {/* INPUT */}
+          <TextField
+            fullWidth
+            label="URL del sitio"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
 
-              <Grid item xs={12} md={4}>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  size="medium"
-                  onClick={scan}
-                  disabled={loading || !url}
-                  startIcon={!loading && <BugReportIcon />}
-                >
-                  {loading ? <CircularProgress size={20} /> : "Escanear"}
-                </Button>
-              </Grid>
-            </Grid>
+          {/* BUTTON */}
+          <Button
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3 }}
+            onClick={scan}
+            disabled={loading || !url}
+          >
+            {loading ? <CircularProgress size={24} /> : "Escanear"}
+          </Button>
 
-            {error && (
-              <Typography color="error" mt={1}>
-                {error}
-              </Typography>
-            )}
+          {/* ERROR */}
+          {error && (
+            <Typography color="error" mt={2}>
+              {error}
+            </Typography>
+          )}
 
-            {result && (
-              <>
-                <Divider sx={{ my: 2 }} />
+          {/* RESULT */}
+          {result && (
+            <>
+              <Divider sx={{ my: 3 }} />
 
-                {/* TOP STATUS */}
-                <Grid container spacing={1.5} alignItems="center">
-                  <Grid item xs={12} md={4}>
+              {/* RISK */}
+              <Chip
+                label={`Riesgo: ${result.risk.level} (${result.risk.score})`}
+                color={riskColor(result.risk.level)}
+                icon={
+                  result.risk.level === "ALTO" ? (
+                    <WarningIcon />
+                  ) : (
+                    <CheckCircleIcon />
+                  )
+                }
+              />
+
+              {/* TESTS */}
+              <Stack spacing={1} mt={2}>
+                <Typography>
+                  XSS (heurístico):{" "}
+                  <strong>
+                    {result.tests.xss ? "Vulnerable" : "Seguro"}
+                  </strong>
+                </Typography>
+                <Typography>
+                  SQLi (heurístico):{" "}
+                  <strong>
+                    {result.tests.sqli ? "Vulnerable" : "Seguro"}
+                  </strong>
+                </Typography>
+              </Stack>
+
+              {/* ISSUES */}
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6">Issues detectadas</Typography>
+
+              <Stack spacing={1} mt={1}>
+                {result.issues.length === 0 ? (
+                  <Typography>✔ No se detectaron problemas</Typography>
+                ) : (
+                  result.issues.map((issue, i) => (
                     <Chip
-                      label={`Riesgo ${result.risk.level} (${result.risk.score})`}
-                      color={riskColor(result.risk.level)}
-                      icon={
-                        result.risk.level === "ALTO" ? (
-                          <WarningIcon />
-                        ) : (
-                          <CheckCircleIcon />
-                        )
-                      }
-                      sx={{ fontWeight: "bold", width: "100%" }}
-                    />
-                  </Grid>
-
-                  <Grid item xs={6} md={4}>
-                    <Chip
-                      label={`XSS: ${
-                        result.tests.xss ? "Vulnerable" : "Seguro"
-                      }`}
-                      color={result.tests.xss ? "error" : "success"}
+                      key={i}
+                      label={issue}
+                      color="warning"
                       variant="outlined"
-                      sx={{ width: "100%" }}
                     />
-                  </Grid>
+                  ))
+                )}
+              </Stack>
 
-                  <Grid item xs={6} md={4}>
-                    <Chip
-                      label={`SQLi: ${
-                        result.tests.sqli ? "Vulnerable" : "Seguro"
-                      }`}
-                      color={result.tests.sqli ? "error" : "success"}
-                      variant="outlined"
-                      sx={{ width: "100%" }}
-                    />
-                  </Grid>
-                </Grid>
+              {/* RECOMMENDATIONS */}
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6">Recomendaciones</Typography>
 
-                {/* ISSUES + RECOMMENDATIONS */}
-                <Grid container spacing={2} mt={1}>
-                  <Grid item xs={12} md={6}>
-                    <Typography variant="subtitle1" fontWeight="bold">
-                      Issues detectadas
-                    </Typography>
-                    <Stack spacing={0.5} mt={1}>
-                      {result.issues.length === 0 ? (
-                        <Typography variant="body2">
-                          ✔ No se detectaron problemas
-                        </Typography>
-                      ) : (
-                        result.issues.map((issue, i) => (
-                          <Chip
-                            key={i}
-                            label={issue}
-                            color="warning"
-                            variant="outlined"
-                            size="small"
-                          />
-                        ))
-                      )}
-                    </Stack>
-                  </Grid>
-
-                  <Grid item xs={12} md={6}>
-                    <Typography variant="subtitle1" fontWeight="bold">
-                      Recomendaciones
-                    </Typography>
-                    <Stack spacing={0.5} mt={1}>
-                      {result.recommendations.length === 0 ? (
-                        <Typography variant="body2">
-                          ✔ Sin acciones urgentes
-                        </Typography>
-                      ) : (
-                        result.recommendations.map((rec, i) => (
-                          <Typography key={i} variant="body2">
-                            • {rec}
-                          </Typography>
-                        ))
-                      )}
-                    </Stack>
-                  </Grid>
-                </Grid>
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </motion.div>
-    </Box>
+              <Stack spacing={1} mt={1}>
+                {result.recommendations.length === 0 ? (
+                  <Typography>✔ Sin acciones urgentes</Typography>
+                ) : (
+                  result.recommendations.map((rec, i) => (
+                    <Typography key={i}>• {rec}</Typography>
+                  ))
+                )}
+              </Stack>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
